@@ -97,7 +97,6 @@ class LLMService {
                   List<String>.from(jsonResponse['formattedQuestions'] ?? []),
             );
           } catch (e) {
-            print('Error decoding JSON: $e');
             return QuestionResult(
                 isQuestion: false,
                 formattedQuestions: []); // Handle JSON decode errors
@@ -108,12 +107,10 @@ class LLMService {
               formattedQuestions: []); // Handle empty candidates
         }
       } else {
-        print('API Error: ${response.statusCode} - ${response.body}');
         return QuestionResult(
             isQuestion: false, formattedQuestions: []); // Handle API errors
       }
     } catch (e) {
-      print('Error in analyzeQuestion: $e');
       return QuestionResult(
           isQuestion: false,
           formattedQuestions: []); // Handle network or other errors
