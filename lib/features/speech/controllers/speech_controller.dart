@@ -161,6 +161,7 @@ class SpeechController extends ChangeNotifier {
       final answer = await _llmService.answerQuestion(
         question,
         _currentInterview,
+        '$_completePhrase\n$_currentPhrase',
         conversationHistory:
             _qaPairs.sublist(1), // Exclude the current question
       );

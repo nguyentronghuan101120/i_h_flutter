@@ -22,56 +22,49 @@ class _SpeechRecognitionSectionState extends State<SpeechRecognitionSection>
           scrollToBottom();
         });
 
-        return Expanded(
-          child: Card(
-            elevation: 4,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: SingleChildScrollView(
-                controller: scrollController,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+        return Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
-                    Row(
-                      children: [
-                        Icon(Icons.mic, color: Theme.of(context).primaryColor),
-                        const SizedBox(width: 8),
-                        Text(
-                          "Voice Recognition",
-                          style:
-                              Theme.of(context).textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SelectableText(
-                            controller.isListening
-                                ? '${controller.completePhrase}\n${controller.currentPhrase}'
-                                : controller.completePhrase,
-                            style:
-                                Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                      color: controller.isListening
-                                          ? Colors.black87
-                                          : Colors.black54,
-                                    ),
+                    Icon(Icons.mic, color: Theme.of(context).primaryColor),
+                    const SizedBox(width: 8),
+                    Text(
+                      "Voice Recognition",
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).primaryColor,
                           ),
-                        ],
-                      ),
                     ),
                   ],
                 ),
-              ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: SelectableText(
+                        controller.isListening
+                            ? '${controller.completePhrase}\n${controller.currentPhrase}'
+                            : controller.completePhrase,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              color: controller.isListening
+                                  ? Colors.black87
+                                  : Colors.black54,
+                            ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         );

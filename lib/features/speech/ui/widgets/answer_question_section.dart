@@ -56,37 +56,35 @@ class _AnswerQuestionSectionState extends State<AnswerQuestionSection>
   Widget build(BuildContext context) {
     return Consumer<SpeechController>(
       builder: (context, controller, child) {
-        return Expanded(
-          flex: 3,
-          child: Card(
-            elevation: 4,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: SingleChildScrollView(
-                controller: scrollController,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+        return Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
-                    Row(
-                      children: [
-                        Icon(Icons.question_answer,
-                            color: Theme.of(context).primaryColor),
-                        const SizedBox(width: 8),
-                        Text(
-                          "Question & Answer",
-                          style:
-                              Theme.of(context).textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                        ),
-                      ],
+                    Icon(Icons.question_answer,
+                        color: Theme.of(context).primaryColor),
+                    const SizedBox(width: 8),
+                    Text(
+                      "Question & Answer",
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).primaryColor,
+                          ),
                     ),
-                    const SizedBox(height: 16),
-                    ListView.builder(
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    child: ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: controller.qaPairs.length,
@@ -192,9 +190,9 @@ class _AnswerQuestionSectionState extends State<AnswerQuestionSection>
                         );
                       },
                     ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         );

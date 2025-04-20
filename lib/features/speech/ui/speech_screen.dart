@@ -2,11 +2,44 @@ import 'package:flutter/material.dart';
 import 'package:i_h/features/speech/ui/widgets/answer_question_section.dart';
 import 'package:i_h/features/speech/ui/widgets/question_section.dart';
 import 'package:i_h/features/speech/ui/widgets/speech_recognition_section.dart';
+import 'package:i_h/features/speech/ui/widgets/resizable_divider.dart';
 import 'package:provider/provider.dart';
 import '../controllers/speech_controller.dart';
 
-class SpeechScreen extends StatelessWidget {
+class SpeechScreen extends StatefulWidget {
   const SpeechScreen({super.key});
+
+  @override
+  State<SpeechScreen> createState() => _SpeechScreenState();
+}
+
+class _SpeechScreenState extends State<SpeechScreen> {
+  // Default flex values for sections (total should be 100)
+  double _speechRecognitionFlex = 40;
+  double _answerQuestionFlex = 60;
+
+  // Minimum flex value for each section
+  static const double _minFlex = 20;
+  static const double _maxFlex = 80;
+
+  void _handleDividerDrag(double dy) {
+    setState(() {
+      // Convert drag delta to flex units (approximately)
+      double flexDelta = (dy / MediaQuery.of(context).size.height) * 100;
+
+      // Update flex values while respecting min/max constraints
+      double newSpeechFlex = _speechRecognitionFlex + flexDelta;
+      double newAnswerFlex = _answerQuestionFlex - flexDelta;
+
+      if (newSpeechFlex >= _minFlex &&
+          newSpeechFlex <= _maxFlex &&
+          newAnswerFlex >= _minFlex &&
+          newAnswerFlex <= _maxFlex) {
+        _speechRecognitionFlex = newSpeechFlex;
+        _answerQuestionFlex = newAnswerFlex;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -115,9 +148,24 @@ class SpeechScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 16),
-              const SpeechRecognitionSection(),
-              const SizedBox(height: 16),
-              const AnswerQuestionSection(),
+              Expanded(
+                child: Column(
+                  children: [
+                    Flexible(
+                      flex: _speechRecognitionFlex.round(),
+                      child: const SpeechRecognitionSection(),
+                    ),
+                    ResizableDivider(
+                      height: 20,
+                      onDrag: _handleDividerDrag,
+                    ),
+                    Flexible(
+                      flex: _answerQuestionFlex.round(),
+                      child: const AnswerQuestionSection(),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         );

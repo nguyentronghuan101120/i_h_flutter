@@ -116,7 +116,8 @@ class LLMService {
 
   Future<String> answerQuestion(
     String question,
-    InterviewPrep? interview, {
+    InterviewPrep? interview,
+    String voiceRecognition, {
     List<QAPair>? conversationHistory,
   }) async {
     try {
@@ -131,6 +132,10 @@ class LLMService {
         
         Candidate's Resume:
         ${interview.resume}
+
+        Voice Recognition Context:
+        The following question was captured through voice recognition: "$voiceRecognition"
+        Please consider any potential transcription errors or variations from the original voice input.
         ''';
 
         if (conversationHistory != null && conversationHistory.isNotEmpty) {
@@ -158,6 +163,10 @@ class LLMService {
         You are an expert interviewer. Please provide a detailed and relevant answer to the following question.
         Your answer should be professional, constructive, and provide practical insights.
         Detect the language of the question and respond in the same language (Vietnamese or English).
+
+        Voice Recognition Context:
+        The following question was captured through voice recognition: "$voiceRecognition"
+        Please consider any potential transcription errors or variations from the original voice input.
         
         ${conversationHistory != null && conversationHistory.isNotEmpty ? 'Previous conversation:\n${conversationHistory.map((qa) => 'Q: ${qa.question}\nA: ${qa.answer}\n\n').join()}' : ''}
         
