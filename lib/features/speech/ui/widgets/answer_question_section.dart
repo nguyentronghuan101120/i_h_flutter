@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:i_h/features/speech/controllers/speech_controller.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'auto_scroll_mixin.dart';
 
 class AnswerQuestionSection extends StatefulWidget {
@@ -12,12 +13,43 @@ class AnswerQuestionSection extends StatefulWidget {
 
 class _AnswerQuestionSectionState extends State<AnswerQuestionSection>
     with AutoScrollMixin {
-  String? _previousAnswer;
-
-  @override
-  void initState() {
-    super.initState();
-    _previousAnswer = '';
+  MarkdownStyleSheet _getMarkdownStyleSheet(BuildContext context) {
+    final theme = Theme.of(context);
+    return MarkdownStyleSheet(
+      h1: theme.textTheme.headlineMedium?.copyWith(
+        color: theme.primaryColor,
+        fontWeight: FontWeight.bold,
+      ),
+      h2: theme.textTheme.titleLarge?.copyWith(
+        color: theme.primaryColor,
+        fontWeight: FontWeight.bold,
+      ),
+      h3: theme.textTheme.titleMedium?.copyWith(
+        color: theme.primaryColor,
+        fontWeight: FontWeight.bold,
+      ),
+      p: theme.textTheme.bodyLarge,
+      strong: theme.textTheme.bodyLarge?.copyWith(
+        fontWeight: FontWeight.bold,
+        color: theme.primaryColor,
+      ),
+      em: theme.textTheme.bodyLarge?.copyWith(
+        fontStyle: FontStyle.italic,
+      ),
+      listBullet: theme.textTheme.bodyLarge,
+      blockquote: theme.textTheme.bodyLarge?.copyWith(
+        color: theme.primaryColor.withAlpha(800),
+        fontStyle: FontStyle.italic,
+      ),
+      code: theme.textTheme.bodyLarge?.copyWith(
+        fontFamily: 'monospace',
+        backgroundColor: theme.primaryColor.withAlpha(100),
+      ),
+      codeblockDecoration: BoxDecoration(
+        color: theme.primaryColor.withAlpha(100),
+        borderRadius: BorderRadius.circular(8),
+      ),
+    );
   }
 
   @override
@@ -60,7 +92,7 @@ class _AnswerQuestionSectionState extends State<AnswerQuestionSection>
                       itemCount: controller.qaPairs.length,
                       itemBuilder: (context, index) {
                         final qaPair = controller.qaPairs[index];
-                        final isProcessing = qaPair['isProcessing'] as bool;
+                        final isProcessing = qaPair.answer.isEmpty;
                         return Column(
                           children: [
                             Card(
@@ -92,10 +124,11 @@ class _AnswerQuestionSectionState extends State<AnswerQuestionSection>
                                       ],
                                     ),
                                     const SizedBox(height: 8),
-                                    Text(
-                                      qaPair['question']!,
-                                      style:
-                                          Theme.of(context).textTheme.bodyLarge,
+                                    MarkdownBody(
+                                      data: qaPair.question,
+                                      styleSheet:
+                                          _getMarkdownStyleSheet(context),
+                                      selectable: true,
                                     ),
                                   ],
                                 ),
@@ -143,11 +176,11 @@ class _AnswerQuestionSectionState extends State<AnswerQuestionSection>
                                         ),
                                       )
                                     else
-                                      Text(
-                                        qaPair['answer']!,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyLarge,
+                                      MarkdownBody(
+                                        data: qaPair.answer,
+                                        styleSheet:
+                                            _getMarkdownStyleSheet(context),
+                                        selectable: true,
                                       ),
                                   ],
                                 ),

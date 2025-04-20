@@ -13,28 +13,14 @@ class SpeechRecognitionSection extends StatefulWidget {
 
 class _SpeechRecognitionSectionState extends State<SpeechRecognitionSection>
     with AutoScrollMixin {
-  String? _previousText;
-
-  @override
-  void initState() {
-    super.initState();
-    _previousText = '';
-  }
-
   @override
   Widget build(BuildContext context) {
     return Consumer<SpeechController>(
       builder: (context, controller, child) {
-        final currentText = controller.completePhrase != ""
-            ? controller.completePhrase
-            : controller.speechEnabled
-                ? 'Tap the microphone to start listening...'
-                : 'Speech not available';
-
-        if (currentText != _previousText) {
-          _previousText = currentText;
+        // Scroll to bottom whenever the text changes
+        WidgetsBinding.instance.addPostFrameCallback((_) {
           scrollToBottom();
-        }
+        });
 
         return Expanded(
           child: Card(
@@ -70,7 +56,9 @@ class _SpeechRecognitionSectionState extends State<SpeechRecognitionSection>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SelectableText(
-                            currentText,
+                            controller.isListening
+                                ? '${controller.completePhrase}\n${controller.currentPhrase}'
+                                : controller.completePhrase,
                             style:
                                 Theme.of(context).textTheme.bodyLarge?.copyWith(
                                       color: controller.isListening

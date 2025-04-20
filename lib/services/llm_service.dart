@@ -1,6 +1,8 @@
 // services/llm_service.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:i_h/models/qa_pair.dart';
+import '../models/interview_model.dart';
 
 class QuestionResult {
   final bool isQuestion;
@@ -65,11 +67,6 @@ class LLMService {
               ]
             }
           ],
-          "generationConfig": {
-            "temperature": 0.0,
-            "topP": 1,
-            "topK": 1,
-          },
         }),
       );
 
@@ -117,8 +114,57 @@ class LLMService {
     }
   }
 
-  Future<String> answerQuestion(String question) async {
+  Future<String> answerQuestion(
+    String question,
+    InterviewPrep? interview, {
+    List<QAPair>? conversationHistory,
+  }) async {
     try {
+      String contextPrompt = '';
+      if (interview != null) {
+        contextPrompt = '''
+        You are an expert interviewer in the field of ${interview.scenario}. 
+        You are conducting an interview for a ${interview.scenario} position.
+        
+        Job Description:
+        ${interview.jobDescription}
+        
+        Candidate's Resume:
+        ${interview.resume}
+        ''';
+
+        if (conversationHistory != null && conversationHistory.isNotEmpty) {
+          contextPrompt += '\nPrevious conversation:\n';
+          for (var qa in conversationHistory) {
+            contextPrompt += 'Q: ${qa.question}\nA: ${qa.answer}\n\n';
+          }
+        }
+
+        contextPrompt += '''
+        Based on this context and previous conversation, please provide a detailed and relevant answer to the following question.
+        Your answer should:
+        1. Be specific to the candidate's background and experience
+        2. Consider the job requirements
+        3. Provide practical examples and insights
+        4. Be professional and constructive
+        5. Maintain consistency with previous answers
+        6. Build upon previous discussion points when relevant
+        7. Detect the language of the question and respond in the same language (Vietnamese or English)
+        
+        Question: $question
+        ''';
+      } else {
+        contextPrompt = '''
+        You are an expert interviewer. Please provide a detailed and relevant answer to the following question.
+        Your answer should be professional, constructive, and provide practical insights.
+        Detect the language of the question and respond in the same language (Vietnamese or English).
+        
+        ${conversationHistory != null && conversationHistory.isNotEmpty ? 'Previous conversation:\n${conversationHistory.map((qa) => 'Q: ${qa.question}\nA: ${qa.answer}\n\n').join()}' : ''}
+        
+        Question: $question
+        ''';
+      }
+
       final response = await http.post(
         Uri.parse(_apiUrl),
         headers: {
@@ -128,7 +174,7 @@ class LLMService {
           'contents': [
             {
               'parts': [
-                {'text': question}
+                {'text': contextPrompt}
               ]
             }
           ]
@@ -144,12 +190,12 @@ class LLMService {
             data['candidates'][0]['content']['parts'].isNotEmpty) {
           return data['candidates'][0]['content']['parts'][0]['text'];
         }
-        return 'Sorry, I couldn\'t process the response properly.';
+        return 'Sorry, I couldn\'t process the response properly. Xin lỗi, tôi không thể xử lý câu trả lời một cách chính xác.';
       } else {
-        return 'Sorry, I encountered an error while processing your question. Status code: ${response.statusCode}';
+        return 'Error processing question (Lỗi xử lý câu hỏi). Status code: ${response.statusCode}';
       }
     } catch (e) {
-      return 'Sorry, I encountered an error while processing your question: $e';
+      return 'Error processing question (Lỗi xử lý câu hỏi): $e';
     }
   }
 }

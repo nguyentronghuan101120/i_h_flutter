@@ -2,7 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'features/speech/controllers/speech_controller.dart';
-import 'features/speech/ui/speech_screen.dart';
+import 'features/preparation/controllers/interview_controller.dart';
+import 'features/preparation/ui/interview_list_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,17 +14,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => SpeechController(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => SpeechController()),
+        ChangeNotifierProvider(create: (_) => InterviewController()),
+      ],
       child: MaterialApp(
-        title: 'Speech Assistant',
+        title: 'Interview Helper',
         theme: ThemeData(
           primarySwatch: Colors.blue,
           useMaterial3: true,
         ),
-        home: const SpeechScreen(),
+        home: const InterviewPreparationListScreen(),
       ),
     );
   }
 }
-

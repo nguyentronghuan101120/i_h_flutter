@@ -103,8 +103,8 @@ class SpeechScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 16),
                   FloatingActionButton(
-                    onPressed: () async => await controller
-                        .analyzeQuestion(controller.completePhrase),
+                    onPressed: () async => await controller.analyzeQuestion(
+                        '${controller.completePhrase}\n${controller.currentPhrase}'),
                     tooltip: 'Analyze Question',
                     backgroundColor: Theme.of(context).colorScheme.surface,
                     child: Icon(
