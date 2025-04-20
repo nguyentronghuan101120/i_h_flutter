@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -53,7 +55,9 @@ class SpeechController extends ChangeNotifier {
   }
 
   Future<void> _initSpeech() async {
-    final status = await Permission.microphone.request();
+    final status = Platform.isMacOS
+        ? PermissionStatus.granted
+        : await Permission.microphone.request();
     if (status.isGranted) {
       _speechEnabled = await _speechToText.initialize(
         debugLogging: true,
@@ -62,7 +66,6 @@ class SpeechController extends ChangeNotifier {
           if ((status == "done" || status == "notListening") && _isListening) {
             await stopListening();
 
-            // Restart listening if we're still in listening mode
             await startListening();
           }
           notifyListeners();
